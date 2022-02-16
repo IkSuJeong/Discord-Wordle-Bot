@@ -1,0 +1,35 @@
+{
+    "id": {
+        "tries": [],
+        "line_1": {
+            "black": [],
+            "yellow": [],
+            "green": []
+        },
+        "line_2": {
+            "black": [],
+            "yellow": [],
+            "green": []
+        },
+        "line_3": {
+            "black": [],
+            "yellow": [],
+            "green": []
+        },
+        "line_4": {
+            "black": [],
+            "yellow": [],
+            "green": []
+        },
+        "line_5": {
+            "black": [],
+            "yellow": [],
+            "green": []
+        },
+        "line_6": {
+            "black": [],
+            "yellow": [],
+            "green": []
+        }
+    }
+}
