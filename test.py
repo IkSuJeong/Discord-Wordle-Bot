@@ -94,6 +94,6 @@ async def print(arg):
     await channel.send(arg)
 '''
         
-token = 'OTQwMTI0NDc4NTUyMzA5ODMw.YgC1Jg.sf4a2StQg4PpO02muGjfs23stDg'
+token = 'TOKEN-HERE'
 
 bot.run(token)
