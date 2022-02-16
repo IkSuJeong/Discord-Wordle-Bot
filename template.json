@@ -2,34 +2,34 @@
     "id": {
         "tries": [],
         "line_1": {
-            "black": [],
-            "yellow": [],
-            "green": []
+            "Green": [],
+            "Yellow": [],
+            "Black": []
         },
         "line_2": {
-            "black": [],
-            "yellow": [],
-            "green": []
+            "Green": [],
+            "Yellow": [],
+            "Black": []
         },
         "line_3": {
-            "black": [],
-            "yellow": [],
-            "green": []
+            "Green": [],
+            "Yellow": [],
+            "Black": []
         },
         "line_4": {
-            "black": [],
-            "yellow": [],
-            "green": []
+            "Green": [],
+            "Yellow": [],
+            "Black": []
         },
         "line_5": {
-            "black": [],
-            "yellow": [],
-            "green": []
+            "Green": [],
+            "Yellow": [],
+            "Black": []
         },
         "line_6": {
-            "black": [],
-            "yellow": [],
-            "green": []
+            "Green": [],
+            "Yellow": [],
+            "Black": []
         }
     }
 }
