@@ -4,14 +4,13 @@ import json
 from plotnine import ggplot, aes, geom_boxplot, theme, xlab, ylab, ggtitle, labs, scale_fill_manual
 
 class UserStats:
-    def inputID(self, discord_id):
+    def inputID(self, discord_id, author):
         with open('storage.json', mode = 'r') as file:
             storage = json.load(file)
     
-        self.discord_id = discord_id
-        self.tries = np.array(storage[self.discord_id]['tries'])
-        self.df = storage[self.discord_id]
-        
+        self.tries = np.array(storage[str(discord_id)]['tries'])
+        self.df = storage[str(discord_id)]
+        self.author = author
         
     def getMean(self):
         lst = self.tries
@@ -25,14 +24,10 @@ class UserStats:
         mean = np.ma.array(lst, mask = np.isnan(lst)).mean()
         std = np.ma.array(lst, mask = np.isnan(lst)).std()
     
-        return f'Average Amount of Tries Needed: {mean:.1f} ± {std:.1f}' \
-               +'            Incomplete Wordles: {count}'
+        return f'Average Amount of Tries Needed: {mean:.1f} ± {std:.1f}            Incomplete Wordles: {count}'
 
     def getBoxPlots(self):
         final_df = []
-        
-        
-        graph = ggplot() + aes(x = 'variable')
         for idx, line in enumerate(list(self.df.keys())[1:]):
             colordict = self.df[line]
             colordf = pd.DataFrame.from_dict(colordict)
@@ -42,12 +37,11 @@ class UserStats:
             final_df.append(colordf)
             
         final_df = pd.concat(final_df)
-        print(final_df)
         graph = ggplot(final_df) \
         + aes(x = 'factor(index)', y = 'value', fill = 'variable') \
         + geom_boxplot(position = 'dodge2') + theme(figure_size = (10, 5)) \
-        + xlab('Line') + ylab('Guess Distribution') + ggtitle('Guesses Color Distribution') \
-        + labs(fill = 'Guess Color')
+        + xlab('Line') + ylab('Guess Distribution') + ggtitle(f'{self.author}\'s Guesses Color Distribution') \
+        + labs(fill = 'Guess Color') + scale_fill_manual(values = ['#3a3a3c', '#538d4e', '#b59f3b'])
         
         graph.save('boxplot')
         
@@ -55,7 +49,8 @@ class UserStats:
 
 if __name__ == '__main__':
     temp = UserStats()
-    temp.inputID('211960973253279744')
+    temp.inputID('211960973253279744', 'ih')
+    name = 'hi'
     print(temp.getMean())
     temp.getBoxPlots()
     
