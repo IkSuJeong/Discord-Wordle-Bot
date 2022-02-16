@@ -1,8 +1,0 @@
-import matplotlib,pyplot as plt
-import pandas as pd
-import numpy as np
-
-class UserStats:
-	
-	def main(self, discord_id):
-		self.discord_id = discord_id
