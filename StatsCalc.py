@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import json
 from plotnine import ggplot, aes, geom_boxplot, theme, xlab, ylab, ggtitle, labs, scale_fill_manual
+from HTML_Writer import Writer
 
 class UserStats:
     def inputID(self, discord_id, author):
         with open('storage.json', mode = 'r') as file:
             storage = json.load(file)
-    
-        self.tries = np.array(storage[str(discord_id)]['tries'])
         self.df = storage[str(discord_id)]
+        self.tries = np.array([x if x != 'X' else np.NaN for x in self.df['tries']])
         self.author = author
         
     def getMean(self):
@@ -17,14 +17,14 @@ class UserStats:
         count = 0
         try:
             while True:
-                lst.remove('X')
+                lst.remove(np.NaN)
                 count += 1
         except:
             pass
         mean = np.ma.array(lst, mask = np.isnan(lst)).mean()
         std = np.ma.array(lst, mask = np.isnan(lst)).std()
     
-        return f'Average Amount of Tries Needed: {mean:.1f} ± {std:.1f}            Incomplete Wordles: {count}'
+        return f'Average Amount of Tries Needed: {mean:.1f} ± {std:.1f}\n            Incomplete Wordles: {count}'
 
     def getBoxPlots(self):
         final_df = []
@@ -37,6 +37,7 @@ class UserStats:
             final_df.append(colordf)
             
         final_df = pd.concat(final_df)
+        final_df['value'] = [x if x != 'X' else np.NaN for x in final_df['value']]
         graph = ggplot(final_df) \
         + aes(x = 'factor(index)', y = 'value', fill = 'variable') \
         + geom_boxplot(position = 'dodge2') + theme(figure_size = (10, 5)) \
@@ -45,12 +46,17 @@ class UserStats:
         
         graph.save('boxplot')
         
-        
+    def wordle_summary(self):
+        tries = [x if str(x) != 'nan' else 'X' for x in self.tries]
+        writer = Writer(list(tries))
+        writer.writeHTML()
+  
 
 if __name__ == '__main__':
     temp = UserStats()
-    temp.inputID('211960973253279744', 'ih')
+    temp.inputID('TOKEN-HERE', 'ih')
     name = 'hi'
     print(temp.getMean())
     temp.getBoxPlots()
+    temp.wordle_summary()
     
