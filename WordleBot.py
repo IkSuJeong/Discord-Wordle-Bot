@@ -1,7 +1,6 @@
 import discord
 import re
 import json
-import numpy as np
 from discord.ext import commands
 #from discord.ext.commands import Bot
 from StatsCalc import UserStats
@@ -38,24 +37,24 @@ def findLineAccuracy(line):
     if greens == 0:
         greens = len(re.findall(orange_square, line))
     return (yellows, greens)
-    
+       
 def updateStorage(message):
-    lines = message.content
+    lines = message.content.split('\n')
     person_id = str(message.author.id)
 
     with open('storage.json', mode = 'r') as file:
         storage = json.load(file)
     try: 
         person = storage[person_id]
+        
     except:
         with open('template.json', mode = 'r') as file:
             person = json.load(file)['id']
-    lines = lines.split('\n')
     line_one = re.findall(r'[1-6X]/6', lines[0])[0]
     try:
         person['tries'].append((int)(re.sub('/6', '', line_one)))
     except:
-        person['tries'].append(np.NaN)
+        person['tries'].append('X')
 
     for idx in range(1, 7):
         try:
@@ -63,7 +62,7 @@ def updateStorage(message):
             (yellow, green) = findLineAccuracy(line)
             black = 5 - yellow - green
         except:
-            yellow = green = black = np.NaN
+            yellow = green = black = 'X'
         person[f'line_{idx}']['Yellow'].append(yellow)
         person[f'line_{idx}']['Green'].append(green)
         person[f'line_{idx}']['Black'].append(black)
@@ -73,23 +72,26 @@ def updateStorage(message):
         json.dump(storage, f, ensure_ascii = False, indent = 4)
 
 
-@bot.command()
+@bot.command(
+        help = 'Fills the storage with all of the Wordles in the channel.',
+        brief = 'One time use for new channel.'
+)
 async def downloadWordles(ctx):
-    channel = bot.get_channel('Put Channel ID as an integer')
-    messages = await ctx.channel.history(limit=1000).flatten()
+    with open('storage.json', mode = 'w') as file:
+        file.write('{}')
+    channel = bot.get_channel('CHANNEL-ID')
+    messages = await ctx.channel.history().flatten()
     for message in messages:
         if re.match(r'Wordle [0-9]{3} [1-6X]/6', message.content):
             updateStorage(message)  
     await ctx.send('Wordles Downloaded')
     
-
-@bot.command()
-async def ping(ctx):
-    print('pong')
-    await ctx.send('pong')
     
-@bot.command()
-async def getMean(ctx):
+@bot.command(
+    help = 'Returns the Wordle average with standard deviation for the user.',
+    brief = 'Prints the average guesses for correct Wordles.'
+)
+async def average(ctx):
     try:
         discord_id = ctx.message.author.id
         name = ctx.message.author.mention
@@ -99,10 +101,13 @@ async def getMean(ctx):
     except:
         await ctx.send('Please put in Wordle Scores')
     
-@bot.command()
+@bot.command(
+    help = 'Sends a the boxplot of the sender\'s line guesses. Separated based on the line number and the letter property.',
+    brief = 'Prints the sender\'s guess boxplot.'
+)
 async def boxplot(ctx):
     try:
-        discord_id = ctx.message.author.id
+        discord_id = str(ctx.message.author.id)
         name = ctx.message.author.name
         stats = UserStats()
         stats.inputID(discord_id, name)
@@ -110,14 +115,21 @@ async def boxplot(ctx):
         await ctx.send(file = discord.File('boxplot.png'))
     except:
         await ctx.send('Please put in Wordle Scores')
-
-'''
-Will overwrite the usual print()
-@client.command()
-async def print(arg):
-    channel = client.get_channel(940147277102710817)
-    await channel.send(arg)
-'''
+        
+@bot.command(
+    help = 'Copies the Wordle statistics page and prints it onto the channel.',
+    brief = 'Prints the standard Wordle Stats of the sender.'
+)
+async def summary(ctx):
+    try:
+        discord_id = str(ctx.message.author.id)
+        name = ctx.message.author.name
+        stats = UserStats()
+        stats.inputID(discord_id, name)
+        stats.wordle_summary()
+        await ctx.send(file = discord.File('wordle_basic.png'))
+    except:
+        await ctx.send('Please put in Wordle Scores')
         
 token = 'TOKEN-HERE'
 
